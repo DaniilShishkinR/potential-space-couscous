@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Скачивание контента, Скачанные файлы">
+    <meta name="description" content="">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клиентская часть</title>
+    <link rel="stylesheet" href="styles.css" media="screen">
+</head>
+
+
+<body>
+    
+    <h1>Скачивание контента</h1>
+    <label for="keyword">Введите ключевое слово:</label>
+    <input type="text" id="keyword">
+    <button id="get-url-btn" class="button-click-animation">Получить URL</button>
+    <div id="url-list"></div>
+
+    <h2>Скачанные файлы</h2>
+    <ul id="downloaded-files"></ul>
+
+    <button id="delete-files">Удалить файлы</button>
+<div id="file-content"></div>
+
+<button id="close-file-content">Закрыть</button>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#get-url-btn').click(function(){
+                const keyword = $('#keyword').val();
+                $.get(`/api/urls?keyword=${keyword}`, function(data){
+                    $('#url-list').empty();
+                    data.forEach(url => {
+                        $('#url-list').append(`<a href="${url}" download>${url}</a><br>`);
+                    });
+                });
+            });
+
+          
+
+           
+
+   
+
+    // Просмотр содержимого файла
+    $('#downloaded-files').on('click', 'li', function(){
+        const fileName = $(this).text(); // Получаем имя файла
+        // Ваш код для отображения содержимого файла по его имени fileName
+        // Например, можно использовать AJAX запрос на сервер для получения содержимого файла
+        // или отобразить содержимое в другом блоке на странице
+        $('#file-content').html(`<iframe src="api/view-file?fileName=${fileName}" width="100%" height="400px"></iframe>`);
+        
+    });
+});
+
+        function deleteFile(url) {
+            fetch(url, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        $(document).ready(function(){
+        let filesList = []; // Массив для хранения добавленных файлов
+
+        $('#add-file-btn').click(function(){
+            const fileInput = $('<input type="file" style="display: none">');
+            fileInput.change(function(){
+                const file = this.files[0];
+                filesList.push(file);
+                const fileName = file.name;
+                $('#downloaded-files').append(`<li>${fileName}</li>`);
+            });
+            fileInput.click();
+        });
+
+        $('#delete-files').click(function(){
+            filesList = []; // Очищаем массив файлов
+            $('#downloaded-files').empty();
+        });
+    });
+    $('#url-list').on('click', 'a', function(e) {
+    e.preventDefault();
+    const downloadUrl = $(this).attr('href');
+    
+  
+});
+
+$(document).ready(function(){
+    $('#get-url-btn').click(function(){
+        const keyword = $('#keyword').val();
+        $.get(`/api/urls?keyword=${keyword}`, function(data){
+            $('#url-list').empty();
+            data.forEach(keyword => {
+                $('#url-list').append(`<div>${keyword} <button class="delete-keyword">Удалить</button></div>`);
+            });
+        });
+    });
+
+    $('#downloaded-keywords').on('click', '.delete-keyword', function(){
+        $(this).parent().remove();
+    });
+
+    $('#url-list').on('click', 'div', function(){
+        const keyword = $(this).text();
+        $('#downloaded-keywords').append(`<li>${keyword} <button class="delete-keyword">Удалить</button></li>`);
+    });
+});
+
+$(document).ready(function(){
+    $('#get-url-btn').click(function(){
+        const keyword = $('#keyword').val();
+        $.get(`/api/urls?keyword=${keyword}`, function(data){
+            $('#url-list').empty();
+            data.forEach(url => {
+                $('#url-list').append(`<div><a href="${url}" download>${url}</a></div>`);
+            });
+        });
+    });
+
+    $('#downloaded-files').on('click', '.delete-file', function(){
+        $(this).parent().remove();
+    });
+
+    $('#url-list').on('click', 'a', function(){
+        const filename = $(this).text();
+        $('#downloaded-files').append(`<li>${filename} <button class="delete-file">Удалить</button></li>`);
+    });
+});
+
+$('#close-file-content').on('click', function(){
+    $('#file-content').html(''); // Очищаем содержимое блока
+});
+
+
+
+    </script>
+</body>
+</html>
